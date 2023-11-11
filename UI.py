@@ -90,6 +90,8 @@ Histogram_button.pack(pady=5)
 shape_feature = tk.Label(root, text="")
 shape_feature.pack()
 
-# Thông báo
+# Chức năng 3: Hiển thị thời gian khi sử dụng K-mean với 2 dữ liệu
+
+# Chức năng 4: Trực quan hóa dữ liệu bằng cách dùng PCA đưa về 2 chiều và vẽ đồ thị
 
 root.mainloop()
