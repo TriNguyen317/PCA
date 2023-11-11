@@ -12,17 +12,20 @@ def select_directory():
             status_label.config(text=f"Hoàn thành! Đường dẫn đã chọn: {directory_path}")
             global data
             data = np.array(ReadImage(directory_path))
-            print(data.shape)
+            shape_input.config(text=f"Số chiều đầu vào: ({data.shape[0]},{data.shape[1]},{data.shape[2]})")
     except Exception as e:
         status_label.config(text=f"Lỗi: {str(e)}")
 
 def preprocess_data():
     try:
         processed_data = Preprocess(data)
-            
+        shape_feature.config(text=f"Số chiều đặc trung lấy được: ({processed_data.shape[0]},{processed_data.shape[1]})")
+
         print(processed_data.shape)
     except Exception as e:
-        status_label.config(text=f"Lỗi khi xử lý dữ liệu: {str(e)}")
+        if str(e)=="'NoneType' object has no attribute 'shape'":
+            status_label.config(text=f"Lỗi khi xử lý dữ liệu: Chưa chọn đường dẫn")
+        
 
 
 
@@ -37,7 +40,6 @@ user_manual_3 = tk.Label(root, text="2. Chọn bắt đầu dữ liệu sẽ đ�
 
 
 blank = tk.Label(root, text="")
-status_label = tk.Label(root, text="")
 title_label.pack()
 blank.pack()
 note_label.pack()
@@ -46,20 +48,27 @@ user_manual.pack()
 user_manual_1.pack()
 user_manual_2.pack()
 user_manual_3.pack()
-
 root.title("Chọn Đường Dẫn")
 
 # Tạo button chọn đường dẫn
 select_button = tk.Button(root, text="Chọn Thư Mục", command=select_directory)
 select_button.pack(pady=20)
+status_label = tk.Label(root, text="")
+status_label.pack()
+shape_input = tk.Label(root, text="")
+shape_input.pack()
 
 # Tạo button để chọn cách lấy vector đặc trưng
 label_1 = tk.Label(root, text="Lấy đặc trưng ảnh")
 label_1.pack()
 Flatten_button = tk.Button(root, text="Flatten pixel", command=preprocess_data)
-Histogram_button = tk.Button(root, text="Flatten pixel", command=Histogram)
+Flatten_button.pack(pady=5)
 
-Histogram_button.pack(pady=20)
+Histogram_button = tk.Button(root, text="Histogram pixel", command=Histogram)
+Histogram_button.pack(pady=5)
+
+shape_feature = tk.Label(root, text="")
+shape_feature.pack()
 
 # Thông báo
 
