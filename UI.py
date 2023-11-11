@@ -3,7 +3,6 @@ from tkinter import filedialog
 from PCA import *
 
 directory_path = ""
-data = None
 def select_directory():
     global directory_path
     try:
@@ -25,12 +24,31 @@ def preprocess_data():
     except Exception as e:
         if str(e)=="'NoneType' object has no attribute 'shape'":
             status_label.config(text=f"Lỗi khi xử lý dữ liệu: Chưa chọn đường dẫn")
+        else:
+            status_label.config(text=f"Lỗi khi xử lý dữ liệu: {str(e)}")
         
+def Histogram_data():
+    try:
+        global histogram_data
+        histogram_data = []
+        for image in data:
+            histogram_data.append(Histogram(image))
+            
+        histogram_data = np.array(histogram_data,dtype=np.uint8)
+        shape_feature.config(text=f"Số chiều đặc trung lấy được: ({histogram_data.shape[0]},{histogram_data.shape[1]})")
 
+        print(histogram_data.shape)
+    except Exception as e:
+        if str(e)=="'NoneType' object has no attribute 'shape'":
+            status_label.config(text=f"Lỗi khi xử lý dữ liệu: Chưa chọn đường dẫn")
+        else:
+            status_label.config(text=f"Lỗi khi xử lý dữ liệu: {str(e)}")
 
 
 
 root = tk.Tk()
+
+# Hiện hướng dẫn sử dụng
 title_label = tk.Label(root, text="Ứng dụng sử dụng PCA để giảm chiều dữ liệu trong việc lấy đặc trưng ảnh")
 note_label = tk.Label(root, text="Ứng dụng lấy đặc trưng của ảnh bằng cách flatten các pixel có trong ảnh và sử dụng các đặc trưng đã lấy để phân lớp ảnh bằng thuật toán K-means")
 user_manual = tk.Label(root, text="Hướng dẫn sử dụng")
@@ -50,6 +68,7 @@ user_manual_2.pack()
 user_manual_3.pack()
 root.title("Chọn Đường Dẫn")
 
+# Chức năng 1 : Chọn đường dẫn tệp ảnh
 # Tạo button chọn đường dẫn
 select_button = tk.Button(root, text="Chọn Thư Mục", command=select_directory)
 select_button.pack(pady=20)
@@ -58,13 +77,14 @@ status_label.pack()
 shape_input = tk.Label(root, text="")
 shape_input.pack()
 
+# Chức năng 2: Lấy đặc trưng ảnh
 # Tạo button để chọn cách lấy vector đặc trưng
 label_1 = tk.Label(root, text="Lấy đặc trưng ảnh")
 label_1.pack()
 Flatten_button = tk.Button(root, text="Flatten pixel", command=preprocess_data)
 Flatten_button.pack(pady=5)
 
-Histogram_button = tk.Button(root, text="Histogram pixel", command=Histogram)
+Histogram_button = tk.Button(root, text="Histogram pixel", command=Histogram_data)
 Histogram_button.pack(pady=5)
 
 shape_feature = tk.Label(root, text="")

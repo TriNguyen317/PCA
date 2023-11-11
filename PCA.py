@@ -23,7 +23,7 @@ def ReadImage(Path):
 
 def Histogram(image):
     histogram = cv2.calcHist([image], [0], None, [256], [0, 256])
-    print(Histogram)
+    return histogram
 #Preprocess
 def Preprocess(image_list):
     shape = image_list.shape
