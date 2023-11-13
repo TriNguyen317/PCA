@@ -86,7 +86,8 @@ Flatten_button.pack(pady=5)
 
 Histogram_button = tk.Button(root, text="Histogram pixel", command=Histogram_data)
 Histogram_button.pack(pady=5)
-
+status_label_2 = tk.Label(root, text="")
+status_label_2.pack()
 shape_feature = tk.Label(root, text="")
 shape_feature.pack()
 
