@@ -99,7 +99,9 @@ class CNN(nn.Module):
              nn.ReLU(),
              nn.Linear(1024, 512),
              nn.ReLU(),
-             nn.Linear(512, 254),
+             nn.Linear(512, 256),
+             nn.ReLU(),
+             nn.Linear(256, 6)
         )
 
     def forward(self, x):

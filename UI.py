@@ -78,7 +78,7 @@ def time2ExecuteKMean():
     
         # Kmean với dữ liệu không sử dụng PCA
         start = time.time()
-        kmeans = KMeans(n_clusters=3, random_state=0, n_init="auto").fit_predict(feature)
+        kmeans = KMeans(n_clusters=6, random_state=0, n_init="auto").fit_predict(feature)
         end = time.time()
         timeRun_KMean_feature.config(text="So chieu dau vao khong su dung PCA: {}. Thoi gian chay khi khong su dung PCA: {} giay".format(feature.shape,round(end-start,3)))
         accuracy = np.sum(label == kmeans) / total
@@ -89,7 +89,7 @@ def time2ExecuteKMean():
         
         # Kmean với dữ liệu sử dụng PCA
         start = time.time()
-        kmeans = KMeans(n_clusters=3, random_state=0, n_init="auto").fit_predict(data_PCA[0])
+        kmeans = KMeans(n_clusters=6, random_state=0, n_init="auto").fit_predict(data_PCA[0])
         end = time.time()
         timeRun_KMean_PCAfeature.config(text="So chieu dau vao su dung PCA: {}. Thoi gian chay khi khong su dung PCA: {} giay".format(data_PCA[0].shape,round(end-start,3)))
         accuracy = np.sum(label == kmeans) / total
@@ -141,7 +141,7 @@ def Neural_Network():
         _, test_preds = torch.max(output, 1)
         accuracy = torch.sum(test_preds == label).item() / len(label)
         
-        timeRun_KMean_feature.config(text="So chieu dau vao khong su dung PCA: {}. Thoi gian chay khi khong su dung PCA: {} giay".format(x_PCA.shape,round(end-start,3)))
+        timeRun_KMean_feature.config(text="So chieu dau vao khong su dung PCA: {}. Thoi gian chay khi khong su dung PCA: {} giay".format(feature.shape,round(end-start,3)))
         accuracy_Kmean_feature.config(text="Độ chính xác: {}% ".format(accuracy*100))
         
         # Sử dụng PCA
