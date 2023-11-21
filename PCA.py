@@ -92,7 +92,7 @@ def PCA(feature, keep=0.9):
 
 # Mô hình nhỏ để phân lớp
 class CNN(nn.Module):
-    def __init__(self, in_features):
+    def __init__(self, in_features, out_features):
         super(CNN, self).__init__()
         self.Layer = torch.nn.Sequential(
              nn.Linear(in_features, 1024),
@@ -101,7 +101,7 @@ class CNN(nn.Module):
              nn.ReLU(),
              nn.Linear(512, 256),
              nn.ReLU(),
-             nn.Linear(256, 6)
+             nn.Linear(256, out_features)
         )
 
     def forward(self, x):

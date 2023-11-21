@@ -6,10 +6,12 @@ from tkinter import font
 directory_path = ""
 feature = None
 label = None
+num_label = None
 
 def select_directory():
     global directory_path
     try:
+        global num_label
         directory_path = filedialog.askdirectory(title="Giảm chiều dữ liệu trong trích xuất đặc trưng ảnh ")
         if directory_path:
             status_label.config(text=f"Hoàn thành! Đường dẫn đã chọn: {directory_path}")
@@ -20,6 +22,7 @@ def select_directory():
             data = np.array(data)
             label = np.array(label)
             shape_input.config(text=f"Số chiều đầu vào: ({data.shape[0]},{data.shape[1]},{data.shape[2]})")
+            num_label = len(np.unique(label))
     except Exception as e:
         status_label.config(text=f"Lỗi: {str(e)}")
 
@@ -31,6 +34,7 @@ def preprocess_data():
         processed_data = Preprocess(data)
         shape_feature.config(text=f"Số chiều đặc trung lấy được: ({processed_data.shape[0]},{processed_data.shape[1]})")
         global feature
+        
         flatten_feature = processed_data
         feature = flatten_feature
         print(feature.shape)
@@ -65,7 +69,7 @@ def Histogram_data():
 
 def time2ExecuteKMean():
     try: 
-
+        global num_label
         print(feature)
         total = feature.shape[0]
         #Chạy PCA
@@ -78,7 +82,7 @@ def time2ExecuteKMean():
     
         # Kmean với dữ liệu không sử dụng PCA
         start = time.time()
-        kmeans = KMeans(n_clusters=6, random_state=0, n_init="auto").fit_predict(feature)
+        kmeans = KMeans(n_clusters=num_label, random_state=0, n_init="auto").fit_predict(feature)
         end = time.time()
         timeRun_KMean_feature.config(text="So chieu dau vao khong su dung PCA: {}. Thoi gian chay khi khong su dung PCA: {} giay".format(feature.shape,round(end-start,3)))
         accuracy = np.sum(label == kmeans) / total
@@ -89,7 +93,7 @@ def time2ExecuteKMean():
         
         # Kmean với dữ liệu sử dụng PCA
         start = time.time()
-        kmeans = KMeans(n_clusters=6, random_state=0, n_init="auto").fit_predict(data_PCA[0])
+        kmeans = KMeans(n_clusters=num_label, random_state=0, n_init="auto").fit_predict(data_PCA[0])
         end = time.time()
         timeRun_KMean_PCAfeature.config(text="So chieu dau vao su dung PCA: {}. Thoi gian chay khi khong su dung PCA: {} giay".format(data_PCA[0].shape,round(end-start,3)))
         accuracy = np.sum(label == kmeans) / total
@@ -106,6 +110,7 @@ def Neural_Network():
         
         global feature
         global label
+        global num_label
         accuracy_Kmean_feature.config(text="Đang chạy phân lớp", fg="red")
         #Chạy PCA
         start = time.time()
@@ -116,7 +121,7 @@ def Neural_Network():
         print()
         
         # Không PCA
-        model = CNN(feature.shape[1])
+        model = CNN(feature.shape[1], num_label)
         start = time.time()
         criterion = nn.CrossEntropyLoss()
         optimizer = optim.RMSprop(model.parameters())
@@ -134,6 +139,11 @@ def Neural_Network():
                 loss = criterion(outputs, labels)
                 loss.backward()
                 optimizer.step()
+            pred = model(feature)
+            output = nn.Softmax(dim=1)(pred)
+            _, test_preds = torch.max(output, 1)
+            accuracy = torch.sum(test_preds == label).item() / len(label)
+            print("Epoch {} : Accuracy {}%".format(epoch+1, accuracy*100))
         end = time.time()
         model.eval()
         pred = model(feature)
@@ -145,10 +155,10 @@ def Neural_Network():
         accuracy_Kmean_feature.config(text="Độ chính xác: {}% ".format(accuracy*100))
         
         # Sử dụng PCA
-        model = CNN(data_PCA[0].shape[1])
+        model = CNN(data_PCA[0].shape[1], num_label)
         start = time.time()
         criterion = nn.CrossEntropyLoss()
-        optimizer = optim.RMSprop(model.parameters())
+        optimizer = optim.Adam(model.parameters())
         x_PCA = torch.tensor(data_PCA[0], dtype=torch.float)
         dataset = TensorDataset(x_PCA, label)
         dataloader = DataLoader(dataset, batch_size=6, shuffle=True)
@@ -168,7 +178,7 @@ def Neural_Network():
         _, test_preds = torch.max(output, 1)
         accuracy = torch.sum(test_preds == label).item() / len(label)
         
-        timeRun_KMean_PCAfeature.config(text="So chieu dau vao khong su dung PCA: {}. Thoi gian chay khi khong su dung PCA: {} giay".format(feature.shape,round(end-start,3)))
+        timeRun_KMean_PCAfeature.config(text="So chieu dau vao khong su dung PCA: {}. Thoi gian chay khi khong su dung PCA: {} giay".format(x_PCA.shape,round(end-start,3)))
         accuracy_Kmean_PCAfeature.config(text="Độ chính xác: {}% ".format(accuracy*100))
     except Exception as e:
         print(e)
@@ -197,6 +207,8 @@ root.title("Chọn Đường Dẫn")
 
 # Chức năng 1 : Chọn đường dẫn tệp ảnh
 # Tạo button chọn đường dẫn
+size_label = tk.Label(root, text="Nhập kích thước ảnh: ")
+size_label.pack()
 get_size_image = tk.Entry(root, width=30)
 get_size_image.insert(0, 100)
 get_size_image.pack(pady=10)
@@ -235,6 +247,8 @@ KMean_classifer_button.pack(pady=5)
 
 KMean_classifer_button = tk.Button(root, text="Phân lớp bằng Neural Network", command=Neural_Network)
 KMean_classifer_button.pack(pady=5)
+epochs_label = tk.Label(root, text="Nhập số epochs: ")
+epochs_label.pack()
 get_epochs = tk.Entry(root, width=30)
 get_epochs.insert(0, 5)
 get_epochs.pack()
