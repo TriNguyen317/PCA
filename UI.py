@@ -97,7 +97,7 @@ def time2ExecuteKMean():
         end = time.time()
         timeRun_KMean_PCAfeature.config(text="So chieu dau vao su dung PCA: {}. Thoi gian chay khi khong su dung PCA: {} giay".format(data_PCA[0].shape,round(end-start,3)))
         accuracy = np.sum(label == kmeans) / total
-        accuracy_Kmean_feature.config(text="Độ chính xác: {}% ".format(accuracy*100))
+        accuracy_Kmean_PCAfeature.config(text="Độ chính xác: {}% ".format(accuracy*100))
         print("Lượng data được giữ lại: {}%".format(data_PCA[1]))
         print ("So chieu dau vao su dung PCA: {}".format(data_PCA[0].shape[1]))
         print ("Thoi gian chay khi su dung PCA: {}".format(end-start))
@@ -105,83 +105,83 @@ def time2ExecuteKMean():
     except Exception as e:
         print(e)
 
-def Neural_Network():
-    try: 
+# def Neural_Network():
+#     try: 
         
-        global feature
-        global label
-        global num_label
-        accuracy_Kmean_feature.config(text="Đang chạy phân lớp", fg="red")
-        #Chạy PCA
-        start = time.time()
-        data_PCA = PCA(feature)
-        end = time.time()
-        timeRun_PCA.config(text="Thoi gian chay PCA: {}".format(round(end-start,3)))
-        print ("Thoi gian chay PCA: {}".format(round(end-start,3)))
-        print()
+#         global feature
+#         global label
+#         global num_label
+#         accuracy_Kmean_feature.config(text="Đang chạy phân lớp", fg="red")
+#         #Chạy PCA
+#         start = time.time()
+#         data_PCA = PCA(feature)
+#         end = time.time()
+#         timeRun_PCA.config(text="Thoi gian chay PCA: {}".format(round(end-start,3)))
+#         print ("Thoi gian chay PCA: {}".format(round(end-start,3)))
+#         print()
         
-        # Không PCA
-        model = CNN(feature.shape[1], num_label)
-        start = time.time()
-        criterion = nn.CrossEntropyLoss()
-        optimizer = optim.RMSprop(model.parameters())
-        epochs = int(get_epochs.get())
-        feature = torch.tensor(feature, dtype=torch.float)
-        label = torch.tensor(label, dtype=torch.long)
-        dataset = TensorDataset(feature, label)
-        dataloader = DataLoader(dataset, batch_size=6, shuffle=True)
+#         # Không PCA
+#         model = Classify(feature.shape[1], num_label)
+#         start = time.time()
+#         criterion = nn.CrossEntropyLoss()
+#         optimizer = optim.RMSprop(model.parameters())
+#         epochs = int(get_epochs.get())
+#         feature = torch.tensor(feature, dtype=torch.float)
+#         label = torch.tensor(label, dtype=torch.long)
+#         dataset = TensorDataset(feature, label)
+#         dataloader = DataLoader(dataset, batch_size=6, shuffle=True)
         
-        for epoch in range(epochs):
-            model.train()
-            for inputs, labels in dataloader:
-                optimizer.zero_grad()
-                outputs = model(inputs)
-                loss = criterion(outputs, labels)
-                loss.backward()
-                optimizer.step()
-            pred = model(feature)
-            output = nn.Softmax(dim=1)(pred)
-            _, test_preds = torch.max(output, 1)
-            accuracy = torch.sum(test_preds == label).item() / len(label)
-            print("Epoch {} : Accuracy {}%".format(epoch+1, accuracy*100))
-        end = time.time()
-        model.eval()
-        pred = model(feature)
-        output = nn.Softmax(dim=1)(pred)
-        _, test_preds = torch.max(output, 1)
-        accuracy = torch.sum(test_preds == label).item() / len(label)
+#         for epoch in range(epochs):
+#             model.train()
+#             for inputs, labels in dataloader:
+#                 optimizer.zero_grad()
+#                 outputs = model(inputs)
+#                 loss = criterion(outputs, labels)
+#                 loss.backward()
+#                 optimizer.step()
+#             pred = model(feature)
+#             output = nn.Softmax(dim=1)(pred)
+#             _, test_preds = torch.max(output, 1)
+#             accuracy = torch.sum(test_preds == label).item() / len(label)
+#             print("Epoch {} : Accuracy {}%".format(epoch+1, accuracy*100))
+#         end = time.time()
+#         model.eval()
+#         pred = model(feature)
+#         output = nn.Softmax(dim=1)(pred)
+#         _, test_preds = torch.max(output, 1)
+#         accuracy = torch.sum(test_preds == label).item() / len(label)
         
-        timeRun_KMean_feature.config(text="So chieu dau vao khong su dung PCA: {}. Thoi gian chay khi khong su dung PCA: {} giay".format(feature.shape,round(end-start,3)))
-        accuracy_Kmean_feature.config(text="Độ chính xác: {}% ".format(accuracy*100))
+#         timeRun_KMean_feature.config(text="So chieu dau vao khong su dung PCA: {}. Thoi gian chay khi khong su dung PCA: {} giay".format(feature.shape,round(end-start,3)))
+#         accuracy_Kmean_feature.config(text="Độ chính xác: {}% ".format(accuracy*100))
         
-        # Sử dụng PCA
-        model = CNN(data_PCA[0].shape[1], num_label)
-        start = time.time()
-        criterion = nn.CrossEntropyLoss()
-        optimizer = optim.Adam(model.parameters())
-        x_PCA = torch.tensor(data_PCA[0], dtype=torch.float)
-        dataset = TensorDataset(x_PCA, label)
-        dataloader = DataLoader(dataset, batch_size=6, shuffle=True)
+#         # Sử dụng PCA
+#         model = Classify(data_PCA[0].shape[1], num_label)
+#         start = time.time()
+#         criterion = nn.CrossEntropyLoss()
+#         optimizer = optim.Adam(model.parameters())
+#         x_PCA = torch.tensor(data_PCA[0], dtype=torch.float)
+#         dataset = TensorDataset(x_PCA, label)
+#         dataloader = DataLoader(dataset, batch_size=6, shuffle=True)
         
-        for epoch in range(epochs):
-            model.train()
-            for inputs, labels in dataloader:
-                optimizer.zero_grad()
-                outputs = model(inputs)
-                loss = criterion(outputs, labels)
-                loss.backward()
-                optimizer.step()
-        end = time.time()
-        model.eval()
-        pred = model(x_PCA)
-        output = nn.Softmax(dim=1)(pred)
-        _, test_preds = torch.max(output, 1)
-        accuracy = torch.sum(test_preds == label).item() / len(label)
+#         for epoch in range(epochs):
+#             model.train()
+#             for inputs, labels in dataloader:
+#                 optimizer.zero_grad()
+#                 outputs = model(inputs)
+#                 loss = criterion(outputs, labels)
+#                 loss.backward()
+#                 optimizer.step()
+#         end = time.time()
+#         model.eval()
+#         pred = model(x_PCA)
+#         output = nn.Softmax(dim=1)(pred)
+#         _, test_preds = torch.max(output, 1)
+#         accuracy = torch.sum(test_preds == label).item() / len(label)
         
-        timeRun_KMean_PCAfeature.config(text="So chieu dau vao khong su dung PCA: {}. Thoi gian chay khi khong su dung PCA: {} giay".format(x_PCA.shape,round(end-start,3)))
-        accuracy_Kmean_PCAfeature.config(text="Độ chính xác: {}% ".format(accuracy*100))
-    except Exception as e:
-        print(e)
+#         timeRun_KMean_PCAfeature.config(text="So chieu dau vao khong su dung PCA: {}. Thoi gian chay khi khong su dung PCA: {} giay".format(x_PCA.shape,round(end-start,3)))
+#         accuracy_Kmean_PCAfeature.config(text="Độ chính xác: {}% ".format(accuracy*100))
+#     except Exception as e:
+#         print(e)
 
 root = tk.Tk()
 
@@ -245,13 +245,13 @@ label_2.pack()
 KMean_classifer_button = tk.Button(root, text="Phân lớp bằng KMeans", command=time2ExecuteKMean)
 KMean_classifer_button.pack(pady=5)
 
-KMean_classifer_button = tk.Button(root, text="Phân lớp bằng Neural Network", command=Neural_Network)
-KMean_classifer_button.pack(pady=5)
-epochs_label = tk.Label(root, text="Nhập số epochs: ")
-epochs_label.pack()
-get_epochs = tk.Entry(root, width=30)
-get_epochs.insert(0, 5)
-get_epochs.pack()
+# KMean_classifer_button = tk.Button(root, text="Phân lớp bằng Neural Network", command=Neural_Network)
+# KMean_classifer_button.pack(pady=5)
+# epochs_label = tk.Label(root, text="Nhập số epochs: ")
+# epochs_label.pack()
+# get_epochs = tk.Entry(root, width=30)
+# get_epochs.insert(0, 5)
+# get_epochs.pack()
 
 info_PCAfeature = tk.Label(root, text="")
 info_PCAfeature.pack()

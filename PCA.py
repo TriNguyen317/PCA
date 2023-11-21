@@ -91,9 +91,9 @@ def PCA(feature, keep=0.9):
     return transformed, ratio
 
 # Mô hình nhỏ để phân lớp
-class CNN(nn.Module):
+class Classify(nn.Module):
     def __init__(self, in_features, out_features):
-        super(CNN, self).__init__()
+        super(Classify, self).__init__()
         self.Layer = torch.nn.Sequential(
              nn.Linear(in_features, 1024),
              nn.ReLU(),
@@ -142,4 +142,4 @@ def main():
     print ("Thoi gian chay khi su dung PCA: {}".format(end-start))
 
 if __name__=="__main__":
-    model = CNN()
+    model = Classify()
