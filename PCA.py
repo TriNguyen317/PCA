@@ -5,7 +5,7 @@ from sklearn.cluster import KMeans
 import time
 from skimage.transform import resize
 from skimage.feature import hog
-
+from skimage import img_as_ubyte
 
 #Đọc ảnh từ thư mục
 def ReadImage(Path, size):
@@ -22,6 +22,7 @@ def ReadImage(Path, size):
                 try:
                     image = cv2.imread(image_path, cv2.IMREAD_GRAYSCALE)
                     image = resize(image, (size,size))
+                    image = img_as_ubyte(image)
                     image_list.append(image)
                     label.append(y)
                 except Exception as e:
@@ -82,7 +83,6 @@ def PCA(feature, keep=0.9):
     components = eigen_vectors[:, :n_components]
 
     # Biến đổi dữ liệu gốc sang không gian mới
-    #transformed = np.dot(standardized_data.T, components)
     transformed = np.dot(standardized_data.T, components)
 
     return transformed, ratio

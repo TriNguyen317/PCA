@@ -8,6 +8,19 @@ feature = None
 label = None
 num_label = None
 
+# Chọn thư mục ảnh
+'''Cấu trúc thư mục:
+    - Thư mục chính
+        - Class 1
+            - img1.jpg
+            - img2.jpg
+        - Class 2
+            - img1.jpg
+            - img2.jpg
+        - Class 3
+            - img1.jpg
+            - img2.jpg
+'''
 def select_directory():
     global directory_path
     try:
@@ -18,6 +31,7 @@ def select_directory():
             global data
             global label
             size = int(get_size_image.get())
+            # Lấy ảnh và nhãn của mỗi ảnh trong thư mục theo cấu trúc
             data, label = ReadImage(directory_path, size)
             data = np.array(data)
             label = np.array(label)
@@ -26,15 +40,20 @@ def select_directory():
     except Exception as e:
         status_label.config(text=f"Lỗi: {str(e)}")
 
-
+# Xử lý vector để tăng hiệu suất tính toán và lấy đặc trưng bằng cách flatten
+'''
+    - Đưa các giá trị xám về trong khoảng 0,1
+    - Giảm kích thước ảnh xuống 1/2 --- vd:(250*250) --> (125,125)
+'''
 def preprocess_data():
     try:
 
         global flatten_feature
+        # Lấy đặc trưng ảnh bằng cách flatten
         processed_data = Preprocess(data)
         shape_feature.config(text=f"Số chiều đặc trung lấy được: ({processed_data.shape[0]},{processed_data.shape[1]})")
         global feature
-        
+        # Gán cho dữ liệu dùng trong ứng dụng là đặc trung flatten
         flatten_feature = processed_data
         feature = flatten_feature
         print(feature.shape)
@@ -45,20 +64,21 @@ def preprocess_data():
         else:
             error.config(text=f"Lỗi khi xử lý dữ liệu: {str(e)}")
 
-        
+# Lấy đặc trưng histogram 
 def Histogram_data():
     try:
         global feature
         global histogram_feature
         histogram_data = []
+        
         for image in data:
             histogram_data.append(Histogram(image))
             
         histogram_data = np.array(histogram_data,dtype=np.uint8)
+        
         shape_feature.config(text=f"Số chiều đặc trung lấy được: ({histogram_data.shape[0]},{histogram_data.shape[1]})")
         
-        histogram_feature = histogram_data
-        feature = histogram_feature
+        feature = histogram_data.reshape(histogram_data.shape[0], histogram_data.shape[1])
         print(feature.shape)
 
     except Exception as e:
@@ -67,6 +87,8 @@ def Histogram_data():
         else:
             error.config(text=f"Lỗi khi xử lý dữ liệu: {str(e)}")
 
+
+# Chạy thuật toán Kmean để phân lớp và tính thời gian để so sánh thời gian chạy
 def time2ExecuteKMean():
     try: 
         global num_label
@@ -74,7 +96,7 @@ def time2ExecuteKMean():
         total = feature.shape[0]
         #Chạy PCA
         start = time.time()
-        data_PCA = PCA(feature)
+        data_PCA = PCA(feature,float(ratio_PCA_input.get())/100)
         end = time.time()
         timeRun_PCA.config(text="Thoi gian chay PCA: {}".format(round(end-start,3)))
         print ("Thoi gian chay PCA: {}".format(round(end-start,3)))
@@ -162,12 +184,18 @@ error = tk.Label(root,text="", fg="red")
 error.pack()
 
 # Chức năng 3: Hiển thị thời gian khi sử dụng K-mean với 2 dữ liệu
-label_2 = tk.Label(root, text="Phân lớ", font=font.Font(size=12, weight="bold"))
+label_2 = tk.Label(root, text="Phân lớp", font=font.Font(size=12, weight="bold"))
 label_2.pack()
 
 KMean_classifer_button = tk.Button(root, text="Phân lớp bằng KMeans", command=time2ExecuteKMean)
 KMean_classifer_button.pack(pady=5)
 
+ratio_PCA_label = tk.Label(root, text="Nhập phần trăm thông tin muốn giữ lại sau khi dùng PCA")
+ratio_PCA_label.pack()
+
+ratio_PCA_input = tk.Entry(root, width=30)
+ratio_PCA_input.insert(0, 90)
+ratio_PCA_input.pack()
 
 info_PCAfeature = tk.Label(root, text="")
 info_PCAfeature.pack()
