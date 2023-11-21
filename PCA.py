@@ -91,21 +91,21 @@ def PCA(feature, keep=0.9):
     return transformed, ratio
 
 # Mô hình nhỏ để phân lớp
-class Classify(nn.Module):
-    def __init__(self, in_features, out_features):
-        super(Classify, self).__init__()
-        self.Layer = torch.nn.Sequential(
-             nn.Linear(in_features, 1024),
-             nn.ReLU(),
-             nn.Linear(1024, 512),
-             nn.ReLU(),
-             nn.Linear(512, 256),
-             nn.ReLU(),
-             nn.Linear(256, out_features)
-        )
+# class Classify(nn.Module):
+#     def __init__(self, in_features, out_features):
+#         super(Classify, self).__init__()
+#         self.Layer = torch.nn.Sequential(
+#              nn.Linear(in_features, 1024),
+#              nn.ReLU(),
+#              nn.Linear(1024, 512),
+#              nn.ReLU(),
+#              nn.Linear(512, 256),
+#              nn.ReLU(),
+#              nn.Linear(256, out_features)
+#         )
 
-    def forward(self, x):
-        return self.Layer(x)
+#     def forward(self, x):
+#         return self.Layer(x)
 
     
             
