@@ -142,4 +142,4 @@ def main():
     print ("Thoi gian chay khi su dung PCA: {}".format(end-start))
 
 if __name__=="__main__":
-    model = Classify()
+    main()
